@@ -1,5 +1,6 @@
 package com.example.jana.gisapp;
 
+import android.content.Intent;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -47,6 +48,11 @@ public class ByName extends Activity {
     public void searchClicked(View view) {
         EditText stationName = (EditText)findViewById(R.id.stationName);
         Toast.makeText(getApplicationContext(),stationName.getText(),Toast.LENGTH_LONG).show();
+    }
+    public void backBtnClicked(View view) {
+        Intent mainIntent = new Intent(ByName.this,ChooseMap.class);
+        ByName.this.startActivity(mainIntent);
+        ByName.this.finish();
     }
 
     public boolean onPrepareOptionsMenu(Menu menu) {

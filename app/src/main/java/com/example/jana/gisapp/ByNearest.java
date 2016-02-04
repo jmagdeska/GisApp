@@ -1,11 +1,13 @@
 package com.example.jana.gisapp;
 
+import android.content.Intent;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.view.Menu;
 import android.app.Activity;
+import android.view.View;
 import android.widget.Toast;
 
 public class ByNearest extends Activity {
@@ -16,7 +18,7 @@ public class ByNearest extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.by_name);
+        setContentView(R.layout.by_nearest);
 
         locationManager = (LocationManager)getSystemService(LOCATION_SERVICE);
         locationListener = new LocationListener() {
@@ -41,6 +43,11 @@ public class ByNearest extends Activity {
 
     }
 
+    public void backBtnClicked(View view) {
+        Intent mainIntent = new Intent(ByNearest.this,ChooseMap.class);
+        ByNearest.this.startActivity(mainIntent);
+        ByNearest.this.finish();
+    }
     public boolean onPrepareOptionsMenu(Menu menu) {
         return false;
     }
