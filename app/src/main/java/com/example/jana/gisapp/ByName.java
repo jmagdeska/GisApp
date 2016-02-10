@@ -12,16 +12,29 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.esri.android.map.FeatureLayer;
+import com.esri.android.map.GraphicsLayer;
+import com.esri.android.map.Layer;
+import com.esri.android.map.MapView;
+import com.esri.android.map.ags.ArcGISDynamicMapServiceLayer;
+import com.esri.android.map.ags.ArcGISTiledMapServiceLayer;
+import com.esri.core.geodatabase.GeodatabaseFeatureServiceTable;
+import com.esri.core.portal.BaseMap;
+
+import java.util.Map;
+
 public class ByName extends Activity {
 
     private LocationManager locationManager;
     private LocationListener locationListener;
+    EditText editText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.by_name);
-
+        MapView mapView = (MapView)findViewById(R.id.mapView);
+        mapView.setScale(20);
         locationManager = (LocationManager)getSystemService(LOCATION_SERVICE);
         locationListener = new LocationListener() {
             @Override
@@ -46,9 +59,22 @@ public class ByName extends Activity {
     }
 
     public void searchClicked(View view) {
-        EditText stationName = (EditText)findViewById(R.id.stationName);
-        Toast.makeText(getApplicationContext(),stationName.getText(),Toast.LENGTH_LONG).show();
+        MapView mapView = (MapView)findViewById(R.id.mapView);
+        Layer layers[] = mapView.getLayers();
+        for(int i = 1; i < layers.length; i++) {
+            layers[i].setVisible(false);
+        }
+        editText = (EditText)findViewById(R.id.editText);
+        String stationName = editText.getText().toString();
+
+        switch(stationName) {
+            case "Okta":        layers[1].setVisible(true); break;
+            case "Makpetrol":   layers[2].setVisible(true); break;
+            case "Lukoil":      layers[3].setVisible(true); break;
+            default:            layers[4].setVisible(true); break;
+        }
     }
+
     public void backBtnClicked(View view) {
         Intent mainIntent = new Intent(ByName.this,ChooseMap.class);
         ByName.this.startActivity(mainIntent);

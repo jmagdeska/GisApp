@@ -1,9 +1,13 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
-    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:esri="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    android:paddingBottom="@dimen/activity_vertical_margin" tools:context=".MainActivity">
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    tools:context=".MainActivity">
 
     <LinearLayout
         android:orientation="horizontal"
@@ -23,7 +27,7 @@
         <EditText
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/stationName"
+            android:id="@+id/editText"
             android:layout_weight="0.98"
             android:fontFamily="sans-serif-light"
             android:background="@android:color/transparent"
@@ -47,7 +51,7 @@
         android:id="@+id/mapView"
         android:layout_width="fill_parent"
         android:layout_height="match_parent"
-        url="http://jmagdeska.maps.arcgis.com/home/webmap/viewer.html?webmap=d58cdc0ea56f4a34ac2c1a3dfb15a704"
-        android:layout_below="@+id/linearLayout" />
+        android:layout_below="@+id/linearLayout"
+        url="http://jmagdeska.maps.arcgis.com/home/webmap/viewer.html?webmap=d58cdc0ea56f4a34ac2c1a3dfb15a704"/>
 
 </RelativeLayout>
