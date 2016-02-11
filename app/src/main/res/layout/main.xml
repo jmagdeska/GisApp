@@ -16,23 +16,16 @@
         android:id="@+id/linearLayout"
         android:weightSum="1">
 
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/backBtn"
-            android:src="@drawable/back"
-            android:layout_gravity="center"
-            android:onClick="backBtnClicked" />
-
         <Button
+            android:id="@+id/btn_choose"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Choose"
-            android:id="@+id/chooseBtn"
+            android:text="@string/str_btn_choose"
+            android:layout_gravity="center_horizontal"
             android:fontFamily="sans-serif-light"
-            android:background="#E3D5D1"
             android:textSize="20dp"
-            android:textColor="#A51414" />
+            android:textColor="#A51414"
+            />
 
     </LinearLayout>
 
@@ -41,6 +34,6 @@
         android:layout_width="fill_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/linearLayout"
-        url="http://jmagdeska.maps.arcgis.com/home/webmap/viewer.html?webmap=d58cdc0ea56f4a34ac2c1a3dfb15a704"/>
+        url="http://jmagdeska.maps.arcgis.com/home/item.html?id=d58cdc0ea56f4a34ac2c1a3dfb15a704"/>
 
 </RelativeLayout>

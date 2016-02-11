@@ -20,7 +20,7 @@ public class WelcomeScreen extends Activity {
             @Override
             public void run() {
                 /* Create an Intent that will start the Menu-Activity. */
-                Intent mainIntent = new Intent(WelcomeScreen.this,ChooseMap.class);
+                Intent mainIntent = new Intent(WelcomeScreen.this,MainActivity.class);
                 WelcomeScreen.this.startActivity(mainIntent);
                 WelcomeScreen.this.finish();
             }
