@@ -7,7 +7,7 @@ public class DialogOptions {
             "Makpetrol",
             "Lukoil",
             "Others",
-            "Nearest",
+            "Nearby",
 
     };
 }

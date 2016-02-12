@@ -1,10 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
-    <string name="hello">Hello World, MainActivity!</string>
-    <string name="app_name">GisApp</string>
+    <string name="app_name">FuelUp</string>
     <string name="str_btn_choose">Choose</string>
     <string name="action_settings"></string>
-
-
 </resources>

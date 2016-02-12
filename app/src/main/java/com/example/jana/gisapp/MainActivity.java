@@ -3,13 +3,10 @@ package com.example.jana.gisapp;
 /**
  * Created by computer on 11.2.2016.
  */
-import android.app.Activity;
+import android.app.ActionBar;
 import android.app.FragmentManager;
-import com.esri.core.geometry.Point;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -18,11 +15,8 @@ import com.esri.android.map.LocationDisplayManager;
 import com.esri.android.map.MapView;
 import com.esri.android.map.event.OnStatusChangedListener;
 
-public class MainActivity extends Activity implements  AlertDialogRadio.AlertPositiveListener {
+public class MainActivity extends ActionBarActivity implements  AlertDialogRadio.AlertPositiveListener {
     int position = 0;
-    private LocationManager locationManager;
-    private LocationListener locationListener;
-    public boolean isNetworkEnabled;
     public MapView mapView;
     public LocationDisplayManager ls;
 
@@ -31,6 +25,10 @@ public class MainActivity extends Activity implements  AlertDialogRadio.AlertPos
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         mapView = (MapView)findViewById(R.id.mapView);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(false);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+        setTitle("FuelUp");
 
         OnClickListener listener = new OnClickListener() {
             @Override
@@ -69,17 +67,26 @@ public class MainActivity extends Activity implements  AlertDialogRadio.AlertPos
         }
 
         switch(this.position) {
-            case 0:
-            case 5:     layers[2].setVisible(true);
+            case 0:     setTitle("All");
+                        layers[2].setVisible(true);
+                        layers[3].setVisible(true);
+                layers[4].setVisible(true);
+                        break;
+            case 1:     setTitle("Okta");
+                layers[1].setVisible(true); break;
+            case 2:     setTitle("Makpetrol");
+                layers[2].setVisible(true); break;
+            case 3:     setTitle("Lukoil");
+                layers[3].setVisible(true); break;
+            case 4:     setTitle("Others");
+                layers[4].setVisible(true); break;
+            case 5:     setTitle("Nearby");
+                        layers[2].setVisible(true);
                         layers[3].setVisible(true);
                         layers[4].setVisible(true);
                         mapView.centerAt(ls.getPoint(), true);
                         mapView.setScale(100000);layers[1].setVisible(true);
                         break;
-            case 1:     layers[1].setVisible(true); break;
-            case 2:     layers[2].setVisible(true); break;
-            case 3:     layers[3].setVisible(true); break;
-            case 4:     layers[4].setVisible(true); break;
         }
     }
 }
