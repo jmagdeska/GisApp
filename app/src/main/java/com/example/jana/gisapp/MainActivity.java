@@ -23,13 +23,14 @@ public class MainActivity extends Activity implements  AlertDialogRadio.AlertPos
     private LocationManager locationManager;
     private LocationListener locationListener;
     public boolean isNetworkEnabled;
+    public MapView mapView;
+    public LocationDisplayManager ls;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
-
-        final MapView mapView = (MapView)findViewById(R.id.mapView);
+        mapView = (MapView)findViewById(R.id.mapView);
 
         OnClickListener listener = new OnClickListener() {
             @Override
@@ -46,9 +47,10 @@ public class MainActivity extends Activity implements  AlertDialogRadio.AlertPos
         mapView.setOnStatusChangedListener(new OnStatusChangedListener() {
             public void onStatusChanged(Object source, STATUS status) {
                 if (source == mapView && status == STATUS.INITIALIZED) {
-                    LocationDisplayManager ls = mapView.getLocationDisplayManager();
+                    ls = mapView.getLocationDisplayManager();
                     ls.setAutoPanMode(LocationDisplayManager.AutoPanMode.OFF);
                     ls.start();
+
                 }
             }
         });
@@ -60,7 +62,6 @@ public class MainActivity extends Activity implements  AlertDialogRadio.AlertPos
     @Override
     public void onPositiveClick(int position) {
         this.position = position;
-        MapView mapView = (MapView)findViewById(R.id.mapView);
         Layer layers[] = mapView.getLayers();
 
         for(int i = 1; i < layers.length; i++) {
@@ -69,10 +70,11 @@ public class MainActivity extends Activity implements  AlertDialogRadio.AlertPos
 
         switch(this.position) {
             case 0:
-            case 5:     layers[1].setVisible(true);
-                        layers[2].setVisible(true);
+            case 5:     layers[2].setVisible(true);
                         layers[3].setVisible(true);
                         layers[4].setVisible(true);
+                        mapView.centerAt(ls.getPoint(), true);
+                        mapView.setScale(100000);layers[1].setVisible(true);
                         break;
             case 1:     layers[1].setVisible(true); break;
             case 2:     layers[2].setVisible(true); break;

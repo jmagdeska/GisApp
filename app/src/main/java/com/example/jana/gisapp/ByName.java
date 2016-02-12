@@ -59,24 +59,6 @@ public class ByName extends Activity {
 
     }
 
-//    public void searchClicked(View view) {
-//        MapView mapView = (MapView)findViewById(R.id.mapView);
-//        Layer layers[] = mapView.getLayers();
-//        for(int i = 1; i < layers.length; i++) {
-//            layers[i].setVisible(false);
-//        }
-//        editText = (EditText)findViewById(R.id.editText);
-//        String stationName = editText.getText().toString();
-//
-//        switch(stationName) {
-//            case "Okta":        layers[1].setVisible(true); break;
-//            case "Makpetrol":   layers[2].setVisible(true); break;
-//            case "Lukoil":      layers[3].setVisible(true); break;
-//            default:            layers[4].setVisible(true); break;
-//        }
-//    }
-
-
     public boolean onPrepareOptionsMenu(Menu menu) {
         return false;
     }
