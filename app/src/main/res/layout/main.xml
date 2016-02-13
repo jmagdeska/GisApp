@@ -10,33 +10,25 @@
     android:paddingBottom="@dimen/activity_vertical_margin"
     tools:context=".MainActivity">
 
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:id="@+id/linearLayout"
-        android:weightSum="1">
-
-        <Button
-            android:id="@+id/btn_choose"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/str_btn_choose"
-            android:layout_gravity="center_horizontal"
-            android:fontFamily="sans-serif-light"
-            android:textSize="20dp"
-            android:textColor="#A51414"
-            />
-
-    </LinearLayout>
-
     <com.esri.android.map.MapView
         android:id="@+id/mapView"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         url="http://jmagdeska.maps.arcgis.com/home/webmap/viewer.html?webmap=d58cdc0ea56f4a34ac2c1a3dfb15a704"
-        android:layout_alignParentEnd="true"
         android:layout_alignParentStart="false"
-        android:layout_below="@+id/linearLayout" />
+        android:layout_alignParentEnd="true"
+        android:layout_below="@+id/btn_choose" />
+
+    <Button
+        android:id="@+id/btn_choose"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/str_btn_choose"
+        android:layout_gravity="center_horizontal"
+        android:fontFamily="sans-serif-light"
+        android:textSize="20dp"
+        android:textColor="#A51414"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true" />
 
 </RelativeLayout>

@@ -96,19 +96,26 @@ public class MainActivity extends ActionBarActivity implements  AlertDialogRadio
 
         switch(this.position) {
             case 0:     setTitle("All");
+                        layers[1].setVisible(true);
                         layers[2].setVisible(true);
                         layers[3].setVisible(true);
                         layers[4].setVisible(true);
                         break;
+
             case 1:     setTitle("Okta");
-                layers[1].setVisible(true); break;
+                        layers[2].setVisible(true); break;
+
             case 2:     setTitle("Makpetrol");
-                layers[2].setVisible(true); break;
+                        layers[3].setVisible(true); break;
+
             case 3:     setTitle("Lukoil");
-                layers[3].setVisible(true); break;
+                        layers[4].setVisible(true); break;
+
             case 4:     setTitle("Others");
-                layers[4].setVisible(true); break;
+                        layers[1].setVisible(true); break;
+
             case 5:     setTitle("Nearby");
+                        layers[1].setVisible(true);
                         layers[2].setVisible(true);
                         layers[3].setVisible(true);
                         layers[4].setVisible(true);
