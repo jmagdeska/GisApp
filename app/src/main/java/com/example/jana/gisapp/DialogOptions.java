@@ -8,6 +8,5 @@ public class DialogOptions {
             "Lukoil",
             "Others",
             "Nearby",
-
     };
 }

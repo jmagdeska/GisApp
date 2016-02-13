@@ -5,11 +5,16 @@ package com.example.jana.gisapp;
  */
 import android.app.ActionBar;
 import android.app.FragmentManager;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.Toast;
+
 import com.esri.android.map.Layer;
 import com.esri.android.map.LocationDisplayManager;
 import com.esri.android.map.MapView;
@@ -19,15 +24,21 @@ public class MainActivity extends ActionBarActivity implements  AlertDialogRadio
     int position = 0;
     public MapView mapView;
     public LocationDisplayManager ls;
+    public LocationManager locationManager;
+    public LocationListener locationListener;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         mapView = (MapView)findViewById(R.id.mapView);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setHomeButtonEnabled(false);
+        locationManager = (LocationManager)getSystemService(LOCATION_SERVICE);
+
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+        getSupportActionBar().setHomeButtonEnabled(false);
+        getSupportActionBar().setDisplayUseLogoEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(false);
+        getSupportActionBar().setIcon(R.drawable.actionbaricon);
         setTitle("FuelUp");
 
         OnClickListener listener = new OnClickListener() {
@@ -39,6 +50,23 @@ public class MainActivity extends ActionBarActivity implements  AlertDialogRadio
                 b.putInt("position", position);
                 alert.setArguments(b);
                 alert.show(manager, "alert_dialog_radio");
+            }
+        };
+
+        locationListener = new LocationListener() {
+            @Override
+            public void onLocationChanged(Location location) {
+            }
+
+            @Override
+            public void onStatusChanged(String provider, int status, Bundle extras) {}
+
+            @Override
+            public void onProviderEnabled(String provider) {}
+
+            @Override
+            public void onProviderDisabled(String provider) {
+                Toast.makeText(getApplicationContext(), "Please enable GPS", Toast.LENGTH_LONG).show();
             }
         };
 
@@ -70,7 +98,7 @@ public class MainActivity extends ActionBarActivity implements  AlertDialogRadio
             case 0:     setTitle("All");
                         layers[2].setVisible(true);
                         layers[3].setVisible(true);
-                layers[4].setVisible(true);
+                        layers[4].setVisible(true);
                         break;
             case 1:     setTitle("Okta");
                 layers[1].setVisible(true); break;
@@ -89,4 +117,11 @@ public class MainActivity extends ActionBarActivity implements  AlertDialogRadio
                         break;
         }
     }
+
+    public void onPause() {
+        super.onPause();
+        locationManager.removeUpdates(locationListener);
+        finish();
+    }
+
 }
