@@ -3,4 +3,9 @@
     <string name="app_name">FuelUp</string>
     <string name="str_btn_choose">Choose</string>
     <string name="action_settings"></string>
+    <string name="featureServiceLukoil">http://services5.arcgis.com/cXbHzX7wLBAjxrAd/arcgis/rest/services/lukoil/FeatureServer/0</string>
+    <string name="featureServiceOkta">http://services5.arcgis.com/cXbHzX7wLBAjxrAd/arcgis/rest/services/okta/FeatureServer/0</string>
+    <string name="featureServiceMakpetrol">http://services5.arcgis.com/cXbHzX7wLBAjxrAd/arcgis/rest/services/makpetrol/FeatureServer/0</string>
+    <string name="featureServiceOthers">http://services5.arcgis.com/cXbHzX7wLBAjxrAd/arcgis/rest/services/Others/FeatureServer/0</string>
+
 </resources>
