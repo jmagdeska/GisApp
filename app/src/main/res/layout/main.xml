@@ -14,9 +14,9 @@
         android:id="@+id/mapView"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        MapOptions.MapType="Streets"
         android:layout_alignParentStart="false"
         android:layout_alignParentEnd="true"
+        url="http://jmagdeska.maps.arcgis.com/home/item.html?id=d58cdc0ea56f4a34ac2c1a3dfb15a704"
         android:layout_below="@+id/btn_choose" />
 
     <Button
