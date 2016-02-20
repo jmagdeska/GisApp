@@ -18,6 +18,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -26,6 +27,7 @@ import android.view.MenuItem;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.LinearLayout;
 import android.widget.Toast;
+import android.app.Activity;
 
 import com.esri.android.map.Layer;
 import com.esri.android.map.LocationDisplayManager;
@@ -67,6 +69,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import static android.support.v7.app.ActionBar.*;
+
+
 public class MainActivity extends ActionBarActivity {
     private MapView map;
     private PopupContainer popupContainer;
@@ -83,11 +88,15 @@ public class MainActivity extends ActionBarActivity {
 
         locationManager = (LocationManager)getSystemService(LOCATION_SERVICE);
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
-        getSupportActionBar().setHomeButtonEnabled(false);
-        getSupportActionBar().setDisplayUseLogoEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(false);
-        setTitle("FuelUp");
+//        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+//        getSupportActionBar().setHomeButtonEnabled(false);
+//        getSupportActionBar().setLogo(R.drawable.actionbaricon);
+//        getSupportActionBar().setDisplayUseLogoEnabled(true);
+//        getSupportActionBar().setDisplayShowHomeEnabled(false);
+//        setTitle("FuelUp");
+
+        ActionBar mActionBar = getSupportActionBar();
+        mActionBar.setDisplayOptions( DISPLAY_USE_LOGO| DISPLAY_SHOW_TITLE | DISPLAY_SHOW_CUSTOM | DISPLAY_SHOW_HOME );
 
         // Load a webmap.
         map = new MapView(this, "http://jmagdeska.maps.arcgis.com/home/item.html?id=d58cdc0ea56f4a34ac2c1a3dfb15a704", "", "");

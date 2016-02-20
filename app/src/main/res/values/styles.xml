@@ -3,6 +3,9 @@
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <item name="colorPrimary">@color/primaryColor</item>
         <item name="colorPrimaryDark">@color/primaryDark</item>
+        <item name="icon">@drawable/actionbaricon</item>
+
     </style>
+
 
 </resources>
