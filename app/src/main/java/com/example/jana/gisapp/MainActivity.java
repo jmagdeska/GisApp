@@ -1,20 +1,32 @@
 package com.example.jana.gisapp;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+import android.app.Activity;
 import android.app.Dialog;
-import android.app.FragmentManager;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.Button;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.LinearLayout;
 import android.widget.Toast;
+
 import com.esri.android.map.Layer;
 import com.esri.android.map.LocationDisplayManager;
 import com.esri.android.map.MapView;
@@ -26,35 +38,48 @@ import com.esri.android.map.event.OnStatusChangedListener;
 import com.esri.android.map.popup.Popup;
 import com.esri.android.map.popup.PopupContainer;
 import com.esri.core.geometry.Envelope;
+import com.esri.core.geometry.Geometry;
+import com.esri.core.geometry.Point;
+import com.esri.core.geometry.Polyline;
 import com.esri.core.geometry.SpatialReference;
+import com.esri.core.io.UserCredentials;
 import com.esri.core.map.Feature;
 import com.esri.core.map.FeatureSet;
+import com.esri.core.map.Graphic;
 import com.esri.core.map.popup.PopupInfo;
+import com.esri.core.symbol.SimpleLineSymbol;
 import com.esri.core.tasks.ags.query.Query;
 import com.esri.core.tasks.ags.query.QueryTask;
-import java.util.ArrayList;
-import java.util.concurrent.atomic.AtomicInteger;
-import android.view.ViewGroup.LayoutParams;
+import com.esri.core.tasks.na.NAFeaturesAsFeature;
+import com.esri.core.tasks.na.Route;
+import com.esri.core.tasks.na.RouteParameters;
+import com.esri.core.tasks.na.RouteResult;
+import com.esri.core.tasks.na.RouteTask;
+import com.esri.core.tasks.na.StopGraphic;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.LangUtils;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
-public class MainActivity extends ActionBarActivity implements  AlertDialogRadio.AlertPositiveListener {
-    int position = 0;
-    public MapView mapView;
+public class MainActivity extends ActionBarActivity {
+    private MapView map;
+    private PopupContainer popupContainer;
+    private PopupDialog popupDialog;
+    private ProgressDialog progressDialog;
+    private AtomicInteger count;
     public LocationDisplayManager ls;
     public LocationManager locationManager;
     public LocationListener locationListener;
-    public PopupContainer popupContainer;
-    private PopupDialog popupDialog;
-    private ProgressDialog progressDialog = null;
-    private AtomicInteger count;
 
-    @Override
+    /** Called when the activity is first created. */
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mapView = new MapView(this, "http://jmagdeska.maps.arcgis.com/home/item.html?id=d58cdc0ea56f4a34ac2c1a3dfb15a704", "", "");
-        setContentView(mapView);
-        mapView.centerAt(41.995379, 21.432899, true);
-        mapView.setScale(10000);
 
         locationManager = (LocationManager)getSystemService(LOCATION_SERVICE);
 
@@ -64,20 +89,9 @@ public class MainActivity extends ActionBarActivity implements  AlertDialogRadio
         getSupportActionBar().setDisplayShowHomeEnabled(false);
         setTitle("FuelUp");
 
-        OnClickListener listener = new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                FragmentManager manager = getFragmentManager();
-                AlertDialogRadio alert = new AlertDialogRadio();
-                Bundle b  = new Bundle();
-                b.putInt("position", position);
-                alert.setArguments(b);
-                alert.show(manager, "alert_dialog_radio");
-            }
-        };
-        Button btn = (Button) findViewById(R.id.btn_choose);
-        mapView.addView(btn);
-        btn.setOnClickListener(listener);
+        // Load a webmap.
+        map = new MapView(this, "http://jmagdeska.maps.arcgis.com/home/item.html?id=d58cdc0ea56f4a34ac2c1a3dfb15a704", "", "");
+        setContentView(map);
 
         locationListener = new LocationListener() {
             @Override
@@ -92,33 +106,34 @@ public class MainActivity extends ActionBarActivity implements  AlertDialogRadio
             }
         };
 
-        mapView.setOnStatusChangedListener(new OnStatusChangedListener() {
+        map.setOnStatusChangedListener(new OnStatusChangedListener() {
             public void onStatusChanged(Object source, STATUS status) {
-                if (source == mapView && status == STATUS.INITIALIZED) {
-                    ls = mapView.getLocationDisplayManager();
+                if (source == map && status == STATUS.INITIALIZED) {
+                    ls = map.getLocationDisplayManager();
                     ls.setAutoPanMode(LocationDisplayManager.AutoPanMode.OFF);
                     ls.start();
 
                 }
             }
         });
-
         // Tap on the map and show popups for selected features.
-        mapView.setOnSingleTapListener(new OnSingleTapListener() {
+        map.setOnSingleTapListener(new OnSingleTapListener() {
             private static final long serialVersionUID = 1L;
 
             public void onSingleTap(float x, float y) {
-                if (mapView.isLoaded()) {
+                if (map.isLoaded()) {
                     // Instantiate a PopupContainer
-                    popupContainer = new PopupContainer(mapView);
+                    popupContainer = new PopupContainer(map);
                     int id = popupContainer.hashCode();
+                    popupDialog = null;
+                    // Display spinner.
                     if (progressDialog == null || !progressDialog.isShowing())
-                        progressDialog = ProgressDialog.show(MainActivity.this, "", "Querying...");
+                        progressDialog = ProgressDialog.show(map.getContext(), "", "Querying...");
 
                     // Loop through each layer in the webmap
-                    int tolerance = 20;
-                    Envelope env = new Envelope(mapView.toMapPoint(x, y), 20 * mapView.getResolution(), 20 * mapView.getResolution());
-                    Layer[] layers = mapView.getLayers();
+                    int tolerance = 50;
+                    Envelope env = new Envelope(map.toMapPoint(x, y), 20 * map.getResolution(), 20 * map.getResolution());
+                    Layer[] layers = map.getLayers();
                     count = new AtomicInteger();
                     for (Layer layer : layers) {
                         // If the layer has not been initialized or is invisible, do nothing.
@@ -147,9 +162,9 @@ public class MainActivity extends ActionBarActivity implements  AlertDialogRadio
                                 // Obtain PopupInfo for sub-layer.
                                 PopupInfo popupInfo = dynamicLayer.getPopupInfo(layerInfo.getId());
                                 // Skip sub-layer which is without a popup definition.
-                                if (popupInfo == null) {
+                                if (popupInfo == null)
                                     continue;
-                                }
+
                                 // Check if a sub-layer is visible.
                                 ArcGISLayerInfo info = layerInfo;
                                 while ( info != null && info.isVisible() ) {
@@ -164,7 +179,7 @@ public class MainActivity extends ActionBarActivity implements  AlertDialogRadio
                                 double maxScale = (layerInfo.getMaxScale() != 0) ? layerInfo.getMaxScale():popupInfo.getMaxScale();
                                 double minScale = (layerInfo.getMinScale() != 0) ? layerInfo.getMinScale():popupInfo.getMinScale();
 
-                                if ((maxScale == 0 || mapView.getScale() > maxScale) && (minScale == 0 || mapView.getScale() < minScale)) {
+                                if ((maxScale == 0 || map.getScale() > maxScale) && (minScale == 0 || map.getScale() < minScale)) {
                                     // Query sub-layer which is associated with a popup definition and is visible and in scale range.
                                     count.incrementAndGet();
                                     new RunQueryDynamicLayerTask(env, layer, layerInfo.getId(), dynamicLayer.getSpatialReference(), id).execute(dynamicLayer.getUrl() + "/" + layerInfo.getId());
@@ -175,6 +190,53 @@ public class MainActivity extends ActionBarActivity implements  AlertDialogRadio
                 }
             }
         });
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        Layer layers[] = map.getLayers();
+
+        for(int i = 1; i < layers.length; i++) {
+            layers[i].setVisible(false);
+        }
+
+        switch(item.getItemId()) {
+            case R.id.menuitem1:    setTitle("All");
+                layers[1].setVisible(true);
+                layers[2].setVisible(true);
+                layers[3].setVisible(true);
+                layers[4].setVisible(true);
+                break;
+
+            case R.id.menuitem2:    setTitle("Okta");
+                layers[3].setVisible(true); break;
+
+            case R.id.menuitem3:    setTitle("Makpetrol");
+                layers[2].setVisible(true); break;
+
+            case R.id.menuitem4:    setTitle("Lukoil");
+                layers[1].setVisible(true); break;
+
+            case R.id.menuitem5:    setTitle("Others");
+                layers[4].setVisible(true); break;
+
+            case R.id.menuitem6:    setTitle("Nearby");
+                layers[1].setVisible(true);
+                layers[2].setVisible(true);
+                layers[3].setVisible(true);
+                layers[4].setVisible(true);
+                map.centerAt(ls.getPoint(), true);
+                map.setScale(100000);
+                break;
+        }
+        return true;
     }
 
     private void createPopupViews(Feature[] features, final int id) {
@@ -190,7 +252,7 @@ public class MainActivity extends ActionBarActivity implements  AlertDialogRadio
                 progressDialog.dismiss();
 
             // Create a dialog for the popups and display it.
-            popupDialog = new PopupDialog(mapView.getContext(), popupContainer);
+            popupDialog = new PopupDialog(map.getContext(), popupContainer);
             popupDialog.show();
         }
     }
@@ -253,11 +315,12 @@ public class MainActivity extends ActionBarActivity implements  AlertDialogRadio
             }
 
             for (Feature fr : features) {
-                Popup popup = featureLayer.createPopup(mapView, 0, fr);
+                Popup popup = featureLayer.createPopup(map, 0, fr);
                 popupContainer.addPopup(popup);
             }
             createPopupViews(features, id);
         }
+
     }
 
     // Query dynamic map service layer by QueryTask
@@ -335,7 +398,7 @@ public class MainActivity extends ActionBarActivity implements  AlertDialogRadio
             }
 
             for (Feature fr : features) {
-                Popup popup = layer.createPopup(mapView, subLayerId, fr);
+                Popup popup = layer.createPopup(map, subLayerId, fr);
                 popupContainer.addPopup(popup);
             }
             createPopupViews(features, id);
@@ -362,52 +425,10 @@ public class MainActivity extends ActionBarActivity implements  AlertDialogRadio
         }
     }
 
-    @Override
-    public void onPositiveClick(int position) {
-        this.position = position;
-        Layer layers[] = mapView.getLayers();
-
-        for(int i = 1; i < layers.length; i++) {
-            layers[i].setVisible(false);
-        }
-
-        switch(this.position) {
-            case 0:     setTitle("All");
-                layers[1].setVisible(true);
-                layers[2].setVisible(true);
-                layers[3].setVisible(true);
-                layers[4].setVisible(true);
-                break;
-
-            case 1:     setTitle("Okta");
-                layers[3].setVisible(true); break;
-
-            case 2:     setTitle("Makpetrol");
-                layers[2].setVisible(true); break;
-
-            case 3:     setTitle("Lukoil");
-                layers[1].setVisible(true); break;
-
-            case 4:     setTitle("Others");
-                layers[4].setVisible(true); break;
-
-            case 5:     setTitle("Nearby");
-                layers[1].setVisible(true);
-                layers[2].setVisible(true);
-                layers[3].setVisible(true);
-                layers[4].setVisible(true);
-                mapView.centerAt(ls.getPoint(), true);
-                mapView.setScale(100000);
-                break;
-        }
-    }
-
     public void onPause() {
         super.onPause();
         locationManager.removeUpdates(locationListener);
         finish();
     }
+
 }
-
-
-
